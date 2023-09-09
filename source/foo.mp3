@@ -1,0 +1,1 @@
+/!/lame -vbr -b 240 foo.ogg output.mp3; mv output.mp3 out

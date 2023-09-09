@@ -1,0 +1,7 @@
+output(filename) {
+  return filename + '.mp3'
+}
+
+contents(filename) {
+  ... create an mp3 from the ogg
+}
