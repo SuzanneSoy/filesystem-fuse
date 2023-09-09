@@ -1,1 +1,1 @@
-/!/lame -vbr -b 240 foo.ogg output.mp3; mv output.mp3 out
+/!/100644/out.mp3/ffmpeg -i foo.ogg -acodec libmp3lame -map_metadata 0:s:0 out.mp3
