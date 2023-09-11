@@ -1,6 +1,3 @@
 /cache/
 /mnt/
-/test_cache
-/test_mnt
-/test_source
-/test_actual_result
+/test/
