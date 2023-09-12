@@ -33,6 +33,7 @@ class FilterFS(Operations):
             rl = os.readlink(p)
             if rl.startswith('/!/'):
                 cached_output = os.path.join(self.cache, 'get', path.lstrip('/'))
+                peek = os.path.join(self.cache, 'peek', path.lstrip('/'))
                 if not os.path.exists(cached_output):
                     translator = self._parse(rl)
                     d = os.path.dirname(p)
@@ -44,6 +45,9 @@ class FilterFS(Operations):
                     self._mkparents(cached_output)
                     shutil.move(os.path.join(d, translator.output_filename), cached_output)
                     # end hack
+                    attr = os.lstat(p)
+                    os.utime(cached_output, (attr.st_ctime, attr.st_mtime))
+                    os.utime(peek, (attr.st_ctime, attr.st_mtime))
                 p = cached_output
         return p
     
@@ -65,8 +69,10 @@ class FilterFS(Operations):
                     translator = self._parse(rl)
                     self._mkparents(peek)
                     pathlib.Path(peek).touch()
+                    attr = os.lstat(p)
+                    os.utime(peek, (attr.st_ctime, attr.st_mtime))
                     os.chmod(peek, translator.mode)
-                    return Entity(path = peek, is_translator = True, peek = peek, source = p, size = 9999999999999999)
+                    return Entity(path = peek, is_translator = True, peek = peek, source = p, size = 0)
         return Entity(path = p, is_translator = False, peek = p, source = p, size = None)
 
     # directory
@@ -139,26 +145,28 @@ class FilterFS(Operations):
 
     # other:
     def mknod(self, path, mode, dev):
-        return os.mknod(self._get_entity(path).source, mode, dev)
+        return os.mknod(self._get_entity('mknod', path).source, mode, dev)
 
     # filesystem
     def statfs(self, path):
         pass
     
     # symlinks
-    #def readlink(self, path):
-    #    pass
+    def readlink(self, path):
+        pass
     def symlink(self, destination, symlink_path):
         pass
     
     # file
     def open(self, path, flags):
-        g = self._get("open", path)
-        print('open:', g)
-        return os.open(g, flags)
+        print('open', path, flags)
+        return os.open(self._get("open", path), flags)
     def read(self, path, length, offset, file_handle):
+        print('read', path, length, offset, file_handle)
+        self._get("read", path)
         os.lseek(file_handle, offset, os.SEEK_SET)
-        return os.read(file_handle, length)
+        r = os.read(file_handle, length)
+        return r
     def _assert_is_writable(self, why, path):
         # TODO: might be a bit slow for many repeated writes, but guarantees that
         # if a translator is created in src and a file handle was already obtained
@@ -191,7 +199,8 @@ class FilterFS(Operations):
         return self.flush(path, file_handle)
 
 def main(source, cache, mountpoint):
-    FUSE(FilterFS(source, cache), mountpoint, nothreads=True, foreground=True)
+    # direct_io allows us to return size 0 for non-empty files
+    FUSE(FilterFS(source, cache), mountpoint, nothreads=True, foreground=True, direct_io = True)
 
 if __name__ == '__main__':
     main(sys.argv[1], sys.argv[2], sys.argv[3])
