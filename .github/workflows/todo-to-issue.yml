@@ -1,0 +1,12 @@
+name: "Todo to issue"
+
+on: ["push"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: "actions/checkout@v3"
+    - name: "TODO to Issue"
+      uses: "alstr/todo-to-issue-action@77d9a65a69c4427858c666fe485b33b32b379b05"
+
