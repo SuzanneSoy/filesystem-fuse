@@ -1,0 +1,2 @@
+Similar projects by other people:
+* https://github.com/mikeswain/cmdfs From what I understand, cmdfs needs to run the command on all files ahead of time in order to know the generated file size. It also seems to be more geared towards running a single command (e.g. convert ogg to mp3, or convert png to jpeg). I want to run different commands, and want them to be executed only when the file is accessed.

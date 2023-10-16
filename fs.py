@@ -204,3 +204,11 @@ def main(source, cache, mountpoint):
 
 if __name__ == '__main__':
     main(sys.argv[1], sys.argv[2], sys.argv[3])
+
+# TODO: an option to check that commands are signed with a trusted GPG key before executing them
+#       This would allow the user to run this on a filesystem containing a mix of trusted and
+#       untrusted files (e.g. tar -zxf untrusted-downloaded-file.tar.gz is dangerous). In order to
+#       prevent replay attacks, the signed data should include things like the path to the
+#       symlink-command (otherwise re-using that signed symlink-command in another location with
+#       different files could be used to change the semantics of the command), and/or the inputs
+#       (the command itself and the hash of the input files)

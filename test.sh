@@ -57,3 +57,9 @@ else
   fusermount -u test/mnt || kill -KILL $pid
   exit 1
 fi
+
+# TODO: tests for ctime
+#       e.g. using https://serverfault.com/questions/520322/unix-ctime-how-to-keep-this-precious-information-in-backups-tar
+#       or https://www.halfgaar.net/backing-up-unix
+#       or simply find -print0 | xargs -0 stat
+#       Note that on ext4 we can't access this information without root permissions: https://unix.stackexchange.com/questions/50177/birth-is-empty-on-ext4
